@@ -8,12 +8,15 @@ import java.util.logging.Level;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -58,17 +61,41 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 01 : End");
     }  
     
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase02() {
         System.out.println("Test Case 02 : Start");
         try {
             SoftAssert sa = new SoftAssert();
+            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
             
             driver.get("https://www.youtube.com/");
             System.out.println("Log : Opened youtube.com/");
-
             Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
+            System.out.println("Log : Opened youtube.com");
+
+            //open side bar and click on Films
+            Wrappers.openSideBarToSelect(driver, "Films");
+            System.out.println("Log : Opened side bar and clicked on Films");
+
+            String leftArrowBuuttonXpath = "//*[@id='left-arrow']/ytd-button-renderer/yt-button-shape/button";
+            String rightArrowButtonXpath = "//*[@id='right-arrow']/ytd-button-renderer/yt-button-shape/button";
+
+
+            WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(rightArrowButtonXpath)));
+            while (wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(rightArrowButtonXpath)))!=null) {
+                WebElement rightArrowButton = driver.findElement(By.xpath(rightArrowButtonXpath));
+                jsExecutor.executeScript("arguments[0].scrollIntoView();", rightArrowButton);
+                rightArrowButton.click();    
+            }
+
+
+            Thread.sleep(5000);
+
             sa.assertAll();
+        }  catch (TimeoutException e) {
+            // Log the exception or throw a custom exception
+            System.out.println("Selenium timeout Exception in TestCase02: " + e.getMessage());
         } catch (Exception e) {
             // Log the exception or throw a custom exception
             System.out.println("Exception in TestCase02: " + e.getMessage());
