@@ -44,7 +44,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             //open side bar and click on about in footer
             Wrappers.openSideBarToSelect(driver, "About");
             System.out.println("Log : Opened side bar and clicked on About");
-            WebElement aboutMessageElement = Wrappers.findWebElement(driver, By.xpath("//section[@class='ytabout__content' and contains(text(),'')]"), 5, 1);
+            WebElement aboutMessageElement = Wrappers.findWebElement(driver, By.xpath("//section[@class='ytabout__content' and contains(text(),'')]"), 3, 1);
             System.out.println("About message: " + aboutMessageElement.getText());
             
             sa.assertAll();

@@ -1,6 +1,8 @@
 package demo.wrappers;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -112,25 +114,32 @@ public class Wrappers {
             WebElement sidebar = driver.findElement(By.xpath(xpath));
             jsExecutor.executeScript("arguments[0].scrollIntoView();", sidebar); // scroll to center of viewport
             sidebar.click();
+            
+            HashSet<String> footerHashSet = new HashSet<String>(Arrays.asList("About", "Press", "Copyright", 
+                    "Contact us", "Creators", "Advertise", "Developers", "Terms", "Privacy", "Policy & Safety", 
+                    "How YouTube works", "Test new features"));
 
-            String sideBarOption = "//*[@id='contentContainer']//yt-formatted-string[contains(text(),'"+option+"')]"; // sidebar option
-            wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(sideBarOption)));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(sideBarOption)));
-            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(sideBarOption)));
-            WebElement sidebarOption = Wrappers.findWebElement(driver, By.xpath(sideBarOption), 3, 1);
-            //WebElement sidebarOption = driver.findElement(By.xpath(sideBarOption));
-            jsExecutor.executeScript("arguments[0].scrollIntoView();", sidebar);
-            sidebarOption.click();
-
-            String sideBarFooterOption = "//*[@id='contentContainer']//*[@id='footer']//a[contains(text(),'"+option+"')]"; // sidebar footer option
-            wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(sideBarFooterOption)));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(sideBarFooterOption)));
-            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(sideBarFooterOption)));
-            WebElement sideBarFooterOptionElement = driver.findElement(By.xpath(sideBarFooterOption));
-            jsExecutor.executeScript("arguments[0].scrollIntoView();", sidebar);
-            sideBarFooterOptionElement.click();
+            if(!footerHashSet.contains(option)) {
+                System.out.println("Log : Clicking Element in Sidebar Section");
+                String sideBarOption = "//*[@id='contentContainer']//yt-formatted-string[contains(text(),'"+option+"')]"; // sidebar option
+                wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(sideBarOption)));
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(sideBarOption)));
+                wait.until(ExpectedConditions.elementToBeClickable(By.xpath(sideBarOption)));
+                WebElement sidebarOption = Wrappers.findWebElement(driver, By.xpath(sideBarOption), 3, 1);
+                jsExecutor.executeScript("arguments[0].scrollIntoView();", sidebarOption);
+                sidebarOption.click();
+            } else {
+                System.out.println("Log : Clicking Element in Sidebar  Footer Section");
+                String sideBarFooterOption = "//*[@id='contentContainer']//*[@id='footer']//a[contains(text(),'"+option+"')]"; // sidebar footer option
+                wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(sideBarFooterOption)));
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(sideBarFooterOption)));
+                wait.until(ExpectedConditions.elementToBeClickable(By.xpath(sideBarFooterOption)));
+                WebElement sideBarFooterOptionElement = driver.findElement(By.xpath(sideBarFooterOption));
+                jsExecutor.executeScript("arguments[0].scrollIntoView();", sideBarFooterOptionElement);
+                sideBarFooterOptionElement.click();
+            }
             
         } catch (Exception e) {
             // TODO: handle exception
