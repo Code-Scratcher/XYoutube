@@ -1,20 +1,22 @@
 package demo.wrappers;
 
+import java.time.Duration;
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
-import java.util.List;
 
 public class Wrappers {
     /*
      * Write your selenium wrappers here
      */
+    static WebDriverWait wait;
+    static JavascriptExecutor jsExecutor;
+    
     public static WebElement findWebElement(WebDriver driver, By locator, int retryCount, long retryDelay) throws InterruptedException {
         int attempt = 0;
         while (attempt<retryCount) {
@@ -94,6 +96,45 @@ public class Wrappers {
             // TODO: handle exception
             System.out.println("Error sending keys : " + e.getMessage());
             throw e;
+        }
+    }
+
+    public static void openSideBarToSelect(WebDriver driver, String option) {
+        try {
+
+            jsExecutor = (JavascriptExecutor) driver;
+
+            String xpath = "//*[@id='container']//*[@id='guide-icon']/span/div"; // open side bar button
+            wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(xpath)));
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+            WebElement sidebar = driver.findElement(By.xpath(xpath));
+            jsExecutor.executeScript("arguments[0].scrollIntoView();", sidebar); // scroll to center of viewport
+            sidebar.click();
+
+            String sideBarOption = "//*[@id='contentContainer']//yt-formatted-string[contains(text(),'"+option+"')]"; // sidebar option
+            wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(sideBarOption)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(sideBarOption)));
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(sideBarOption)));
+            WebElement sidebarOption = Wrappers.findWebElement(driver, By.xpath(sideBarOption), 3, 1);
+            //WebElement sidebarOption = driver.findElement(By.xpath(sideBarOption));
+            jsExecutor.executeScript("arguments[0].scrollIntoView();", sidebar);
+            sidebarOption.click();
+
+            String sideBarFooterOption = "//*[@id='contentContainer']//*[@id='footer']//a[contains(text(),'"+option+"')]"; // sidebar footer option
+            wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(sideBarFooterOption)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(sideBarFooterOption)));
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(sideBarFooterOption)));
+            WebElement sideBarFooterOptionElement = driver.findElement(By.xpath(sideBarFooterOption));
+            jsExecutor.executeScript("arguments[0].scrollIntoView();", sidebar);
+            sideBarFooterOptionElement.click();
+            
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Error in clicking sidebar : " + e.getMessage());
         }
     }
 }

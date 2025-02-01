@@ -1,67 +1,113 @@
 package demo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-
-import java.time.Duration;
-import java.util.logging.Level;
 
 import demo.utils.ExcelDataProvider;
 // import io.github.bonigarcia.wdm.WebDriverManager;
 import demo.wrappers.Wrappers;
 
 public class TestCases extends ExcelDataProvider{ // Lets us read the data
-        ChromeDriver driver;
+    ChromeDriver driver;
+    /*
+     * TODO: Write your tests here with testng @Test annotation. 
+     * Follow `testCase01` `testCase02`... format or what is provided in instructions
+     */   
+    @Test(enabled = true)
+    public void testCase01() {    
+        System.out.println("Test Case 01 : Start");
+        try {
+            SoftAssert sa = new SoftAssert();
+            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 
-        /*
-         * TODO: Write your tests here with testng @Test annotation.
-         * Follow `testCase01` `testCase02`... format or what is provided in
-         * instructions
-         */
+            driver.get("https://www.youtube.com/");
+            Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
+            System.out.println("Log : Opened youtube.com");
 
-        /*
-         * Do not change the provided methods unless necessary, they will help in
-         * automation and assessment
-         */
-        @BeforeTest
-        public void startBrowser() {
-                System.setProperty("java.util.logging.config.file", "logging.properties");
-
-                // NOT NEEDED FOR SELENIUM MANAGER
-                // WebDriverManager.chromedriver().timeout(30).setup();
-
-                ChromeOptions options = new ChromeOptions();
-                LoggingPreferences logs = new LoggingPreferences();
-
-                logs.enable(LogType.BROWSER, Level.ALL);
-                logs.enable(LogType.DRIVER, Level.ALL);
-                options.setCapability("goog:loggingPrefs", logs);
-                options.addArguments("--remote-allow-origins=*");
-
-                System.setProperty(ChromeDriverService.CHROME_DRIVER_LOG_PROPERTY, "build/chromedriver.log");
-
-                driver = new ChromeDriver(options);
-
-                driver.manage().window().maximize();
+            //open side bar and click on about in footer
+            Wrappers.openSideBarToSelect(driver, "About");
+            System.out.println("Log : Opened side bar and clicked on About");
+            WebElement aboutMessageElement = Wrappers.findWebElement(driver, By.xpath("//section[@class='ytabout__content' and contains(text(),'')]"), 5, 1);
+            System.out.println("About message: " + aboutMessageElement.getText());
+            
+            sa.assertAll();
+            
+        } catch (Exception e) {
+            // Log the exception or throw a custom exception
+            System.out.println("Exception in TestCase01: " + e.getMessage());
+            Assert.fail("Exception in TestCase01: " + e.getMessage());
         }
 
-        @AfterTest
-        public void endTest() {
-                driver.close();
-                driver.quit();
+        System.out.println("Test Case 01 : End");
+    }  
+    
+    @Test(enabled = false)
+    public void testCase02() {
+        System.out.println("Test Case 02 : Start");
+        try {
+            SoftAssert sa = new SoftAssert();
+            
+            driver.get("https://www.youtube.com/");
+            System.out.println("Log : Opened youtube.com/");
 
+            Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
+            sa.assertAll();
+        } catch (Exception e) {
+            // Log the exception or throw a custom exception
+            System.out.println("Exception in TestCase02: " + e.getMessage());
+            Assert.fail("Exception in TestCase02: " + e.getMessage());    
         }
+
+        System.out.println("Test Case 02 : End");
+    }
+    /*
+     * Do not change the provided methods unless necessary, they will help in automation and assessment
+     */
+    @BeforeTest
+    public void startBrowser()
+    {
+        System.setProperty("java.util.logging.config.file", "logging.properties");
+
+        // NOT NEEDED FOR SELENIUM MANAGER
+        // WebDriverManager.chromedriver().timeout(30).setup();
+
+        ChromeOptions options = new ChromeOptions();
+        LoggingPreferences logs = new LoggingPreferences();
+
+        logs.enable(LogType.BROWSER, Level.ALL);
+        logs.enable(LogType.DRIVER, Level.ALL);
+        options.setCapability("goog:loggingPrefs", logs);
+        options.addArguments("--remote-allow-origins=*");
+
+        System.setProperty(ChromeDriverService.CHROME_DRIVER_LOG_PROPERTY, "build/chromedriver.log"); 
+
+        driver = new ChromeDriver(options);
+
+        driver.manage().window().maximize();
+    }
+
+    @AfterTest
+    public void endTest()
+    {
+        driver.close();
+        driver.quit();
+
+    }    
 }
