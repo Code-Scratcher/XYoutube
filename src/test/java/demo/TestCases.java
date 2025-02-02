@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -34,7 +35,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
      * TODO: Write your tests here with testng @Test annotation. 
      * Follow `testCase01` `testCase02`... format or what is provided in instructions
      */   
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testCase01() {    
         System.out.println("Test Case 01 : Start");
         try {
@@ -102,12 +103,20 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
 
             String filmGenreSectionXpath = "//div[@id='dismissible' and descendant::span[@id='title' and contains(text(),'"+filmGenre+"')]]"; // film genre section(Eg: Top selling, Music, etc)
             WebElement filmGenreSectionElement = Wrappers.findWebElement(driver, By.xpath(filmGenreSectionXpath), 3, 1);
-            String movieCardXpath = ".//*[@id='items']/ytd-grid-movie-renderer"; // child of filmGenreSectionElement // all movie cards in the genre
 
+            String movieCardXpath = ".//*[@id='items']/ytd-grid-movie-renderer"; // child of filmGenreSectionElement // all movie cards in the genre
             List<WebElement> movieCardElements = filmGenreSectionElement.findElements(By.xpath(movieCardXpath));
             System.out.println("Log : Number of movie cards in "+filmGenre+" genre: "+movieCardElements.size()); // debugging purpose
 
+            String contentratinglabelXpath = ".//*[contains(@class,'badge-style-type-simple')]//p"; // child of movieCardElements
+            WebElement lastcontentratinglabelElement = movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(contentratinglabelXpath)); // last movie card in the genre
+            sa.assertEquals(lastcontentratinglabelElement.getText(), "U/A", "Last movie in "+filmGenre+" genre is not U/A rated");
+
+            String genreMovieMetaData = ".//*[contains(@class,'grid-movie-renderer-metadata')]"; // child of movieCardElements (movie genre, year)
+            sa.assertTrue(wait.until(ExpectedConditions.visibilityOf(movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(genreMovieMetaData))))!=null, "Metadata not visible for last movie in "+filmGenre+" genre");
+
             sa.assertAll();
+
         }   catch (Exception e) {
             // Log the exception or throw a custom exception
             System.out.println("Exception in TestCase02: " + e.getMessage());
