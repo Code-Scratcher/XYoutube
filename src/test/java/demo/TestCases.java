@@ -1,9 +1,12 @@
 package demo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.poi.ss.formula.functions.T;
@@ -106,14 +109,22 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
 
             String movieCardXpath = ".//*[@id='items']/ytd-grid-movie-renderer"; // child of filmGenreSectionElement // all movie cards in the genre
             List<WebElement> movieCardElements = filmGenreSectionElement.findElements(By.xpath(movieCardXpath));
-            System.out.println("Log : Number of movie cards in "+filmGenre+" genre: "+movieCardElements.size()); // debugging purpose
+            System.out.println("Log : Number of movie cards in "+filmGenre+" genre: "+movieCardElements.size());
 
             String contentratinglabelXpath = ".//*[contains(@class,'badge-style-type-simple')]//p"; // child of movieCardElements
             WebElement lastcontentratinglabelElement = movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(contentratinglabelXpath)); // last movie card in the genre
             sa.assertEquals(lastcontentratinglabelElement.getText(), "U/A", "Last movie in "+filmGenre+" genre is not U/A rated");
 
-            String genreMovieMetaData = ".//*[contains(@class,'grid-movie-renderer-metadata')]"; // child of movieCardElements (movie genre, year)
-            sa.assertTrue(wait.until(ExpectedConditions.visibilityOf(movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(genreMovieMetaData))))!=null, "Metadata not visible for last movie in "+filmGenre+" genre");
+            String movieMetaData = ".//*[contains(@class,'grid-movie-renderer-metadata')]"; // child of movieCardElements (movie genre, year)
+            if (wait.until(ExpectedConditions.visibilityOf(movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(movieMetaData))))!=null) {
+                String movieMetaDataText = movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(movieMetaData)).getText().trim();
+                System.out.println("Log : Metadata of last movie in "+filmGenre+" genre: "+movieMetaDataText);
+
+                String movieGenre = movieMetaDataText.substring(0, movieMetaDataText.length()-7); // remove year from metadata
+                System.out.println("movieGenre: "+movieGenre); // debugging purpose
+                Set<String> genres = new HashSet<>(Arrays.asList("Comedy", "Romance", "Sport", "Documentary", "Indian cinema", "Horror", "Drama", "Action & adventure"));
+                sa.assertTrue(genres.contains(movieGenre), "Metadata is not visible for last movie in "+filmGenre+" genre");
+            }
 
             sa.assertAll();
 
