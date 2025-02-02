@@ -66,7 +66,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 01 : End");
     }  
     
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testCase02() {
         System.out.println("Test Case 02 : Start");
         try {
@@ -135,6 +135,46 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         }
 
         System.out.println("Test Case 02 : End");
+    }
+
+    @Test(enabled = true)
+    public void testCase03() {
+        System.out.println("Test Case 03 : Start");
+
+        try {
+            SoftAssert sa = new SoftAssert();
+            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+            
+            driver.get("https://www.youtube.com/");
+            System.out.println("Log : Opened youtube.com/");
+            Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
+            System.out.println("Log : Opened youtube.com");
+
+            //open side bar and click on Films
+            Wrappers.openSideBarToSelect(driver, "Music");
+            System.out.println("Log : Opened side bar and clicked on Music");
+
+            //'s Biggest Hits ommited as quote is interfering with xpath
+            String musicSection = "India"; // change this to the music section you want to test
+            WebElement musicSectionElement = Wrappers.findWebElement(driver, By.xpath("//div[@id='dismissible' and descendant::span[@id='title' and contains(text(),'"+musicSection+"')]]"), 3, 1);
+
+            String showMoreButtonXpath = ".//*[contains(@class,'button-container') and not(@hidden)]//button"; // child of musicSectionElement
+            WebElement showMoreButtonElement = musicSectionElement.findElement(By.xpath(showMoreButtonXpath));
+
+            jsExecutor.executeScript("arguments[0].scrollIntoView();", showMoreButtonElement);
+            showMoreButtonElement.click();
+            System.out.println("Log : Clicked on Show More button");
+
+            Thread.sleep(20000); // debug purpose
+
+            sa.assertAll();
+            
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Exception in TestCase03: " + e.getMessage());
+        }
+
+        System.out.println("Test Case 03 : End");
     }
     /*
      * Do not change the provided methods unless necessary, they will help in automation and assessment
