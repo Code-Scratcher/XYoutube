@@ -171,7 +171,11 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
 
             String musicPlayListSongCountXpath = ".//*[contains(@class,'thumbnail-overlay')]//div[@class='badge-shape-wiz__text']";// child of musicPlayListCardElements
             WebElement lastMusicPlayListSongCountElement = musicPlayListCardElements.get(musicPlayListCardElements.size()-1).findElement(By.xpath(musicPlayListSongCountXpath)); // last music play list card song count in the section
-            System.out.println("Log : Song count of last music card in "+musicSection+" section: "+lastMusicPlayListSongCountElement.getText());
+            String songCountText = lastMusicPlayListSongCountElement.getText();
+            System.out.println("Log : Song count of last music card in "+musicSection+" section: "+songCountText);
+
+            int songCountInPlayList = Integer.parseInt(lastMusicPlayListSongCountElement.getText().replaceAll("[^0-9]", ""));
+            sa.assertTrue(songCountInPlayList<=50, "Song count is not visible for last music card in "+musicSection+" section");
 
             sa.assertAll();
             
