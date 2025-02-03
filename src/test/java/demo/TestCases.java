@@ -43,7 +43,6 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 01 : Start");
         try {
             SoftAssert sa = new SoftAssert();
-            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 
             driver.get("https://www.youtube.com/");
             Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
@@ -66,12 +65,11 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 01 : End");
     }  
     
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase02() {
         System.out.println("Test Case 02 : Start");
         try {
             SoftAssert sa = new SoftAssert();
-            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
             
             driver.get("https://www.youtube.com/");
             System.out.println("Log : Opened youtube.com/");
@@ -96,8 +94,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             try {
                 while (wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(rightArrowButtonXpath)))!=null) {  // TimeoutException when arrow button is not visible
                     WebElement rightArrowButton = driver.findElement(By.xpath(rightArrowButtonXpath));
-                    jsExecutor.executeScript("arguments[0].scrollIntoView();", rightArrowButton);
-                    rightArrowButton.click();    
+                    Wrappers.clickWebElement(driver, rightArrowButton);    
                 }
             } catch (TimeoutException e) {
                 // TODO: handle exception
@@ -143,7 +140,6 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
 
         try {
             SoftAssert sa = new SoftAssert();
-            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
             
             driver.get("https://www.youtube.com/");
             System.out.println("Log : Opened youtube.com/");
@@ -151,7 +147,8 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             System.out.println("Log : Opened youtube.com");
 
             //open side bar and click on Films
-            Wrappers.openSideBarToSelect(driver, "Music");
+            String sideBarOption = "Music"; // change this to the section you want to test
+            Wrappers.openSideBarToSelect(driver, sideBarOption);
             System.out.println("Log : Opened side bar and clicked on Music");
 
             //'s Biggest Hits ommited as quote is interfering with xpath
@@ -161,8 +158,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             String showMoreButtonXpath = ".//*[contains(@class,'button-container') and not(@hidden)]//button"; // child of musicSectionElement
             WebElement showMoreButtonElement = musicSectionElement.findElement(By.xpath(showMoreButtonXpath));
 
-            jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'});", showMoreButtonElement); // click intercept error wihout {block: 'center'}
-            showMoreButtonElement.click();
+            Wrappers.clickWebElement(driver, showMoreButtonElement);
             System.out.println("Log : Clicked on Show More button");
 
             sa.assertAll();
