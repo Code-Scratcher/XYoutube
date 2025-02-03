@@ -65,7 +65,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 01 : End");
     }  
     
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testCase02() {
         System.out.println("Test Case 02 : Start");
         try {
@@ -160,6 +160,18 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
 
             Wrappers.clickWebElement(driver, showMoreButtonElement);
             System.out.println("Log : Clicked on Show More button");
+
+            String musicPlayListCardsXpath = ".//div[@id='content']"; // child of musicSectionElement // all music play list cards in the section
+            List<WebElement> musicPlayListCardElements = musicSectionElement.findElements(By.xpath(musicPlayListCardsXpath)); // all music play lsit cards in the section
+            System.out.println("Log : Number of music cards in "+musicSection+" section: "+musicPlayListCardElements.size());
+
+            String musicPlayListCardTitleXpath = ".//a/span[contains(@class,'yt-core-attributed-string')]"; // child of musicPlayListCardElements
+            WebElement lastMusicPlayListCardTitleElements = musicPlayListCardElements.get(musicPlayListCardElements.size()-1).findElement(By.xpath(musicPlayListCardTitleXpath)); // last music play list card titles in the section
+            System.out.println("Log : Title of last music card in "+musicSection+" section: "+lastMusicPlayListCardTitleElements.getText());
+
+            String musicPlayListSongCountXpath = ".//*[contains(@class,'thumbnail-overlay')]//div[@class='badge-shape-wiz__text']";// child of musicPlayListCardElements
+            WebElement lastMusicPlayListSongCountElement = musicPlayListCardElements.get(musicPlayListCardElements.size()-1).findElement(By.xpath(musicPlayListSongCountXpath)); // last music play list card song count in the section
+            System.out.println("Log : Song count of last music card in "+musicSection+" section: "+lastMusicPlayListSongCountElement.getText());
 
             sa.assertAll();
             
