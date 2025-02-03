@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.poi.ss.formula.functions.T;
+import org.checkerframework.checker.units.qual.s;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -134,7 +135,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 02 : End");
     }
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testCase03() {
         System.out.println("Test Case 03 : Start");
 
@@ -185,6 +186,53 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         }
 
         System.out.println("Test Case 03 : End");
+    }
+
+    @Test(enabled = true)
+    public void testCase04() {
+        System.out.println("Test Case 04 : Start");
+
+        try {
+            SoftAssert sa = new SoftAssert();
+            
+            driver.get("https://www.youtube.com/");
+            System.out.println("Log : Opened youtube.com/");
+            Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
+            System.out.println("Log : Opened youtube.com");
+
+            //open side bar and click on News
+            String sideBarOption = "News"; // change this to the section you want to test
+            Wrappers.openSideBarToSelect(driver, sideBarOption);
+            System.out.println("Log : Opened side bar and clicked on News");
+
+            String newsSection = "Latest news posts"; // change this to the section you want to test
+            String newsSectionXpath = "//div[@id='dismissible' and descendant::span[@id='title' and contains(text(),'"+newsSection+"')]]"; // news section(Eg: Latest news posts, Top stories, etc)
+            WebElement newsSectionElement = Wrappers.findWebElement(driver, By.xpath(newsSectionXpath), 3, 1);
+
+            String showMoreButtonXpath = ".//*[contains(@class,'button-container') and not(@hidden)]//button"; // child of newsSectionElement
+            WebElement showMoreButtonElement = newsSectionElement.findElement(By.xpath(showMoreButtonXpath));
+            Wrappers.clickWebElement(driver, showMoreButtonElement);
+
+            String newsPostXpath = ".//div[@id='content' and contains(@class,'ytd-rich-item-renderer')]"; // child of newsSectionElement // all news posts in the section
+            List<WebElement> newsPostsElements = newsSectionElement.findElements(By.xpath(newsPostXpath));
+            System.out.println("Log : Number of news posts in "+newsSection+" section: "+newsPostsElements.size());
+
+            // String contentratinglabelXpath = ".//*[contains(@class,'badge-style-type-simple')]//p"; // child of movieCardElements
+            // WebElement lastcontentratinglabelElement = movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(contentratinglabelXpath)); // last movie card in the genre
+            // sa.assertEquals(lastcontentratinglabelElement.getText(), "U/A", "Last movie in "+filmGenre+" genre is not U/A rated");
+
+            // String movieMetaData = ".//*[contains(@class,'grid-movie-renderer-metadata')]"; // child of movieCardElements (movie genre, year)
+            // if (Wrappers.findWebElement(driver, By.xpath(movieMetaData), 3, 1)!=null) {
+            //     String movieMetaDataText = movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(movieMetaData)).getText().trim();
+            // }
+
+            sa.assertAll();
+        } catch (Exception e) {
+            // TODO: handle exception
+            Assert.fail("Exception in TestCase04: " + e.getMessage());
+        }
+
+        System.out.println("Test Case 04 : End");
     }
     /*
      * Do not change the provided methods unless necessary, they will help in automation and assessment
