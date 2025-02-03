@@ -200,6 +200,9 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
             System.out.println("Log : Opened youtube.com");
 
+            // signin
+            Wrappers.signIn(driver, "testemail@gmail.com", "t123es&2tPasWor@d");
+
             //open side bar and click on News
             String sideBarOption = "News"; // change this to the section you want to test
             Wrappers.openSideBarToSelect(driver, sideBarOption);

@@ -116,6 +116,20 @@ public class Wrappers {
         }
     }
 
+    public static void sendKeys(WebDriver driver, WebElement webElement, String keys) throws Exception {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.visibilityOf(webElement));
+            webElement.click();
+            webElement.clear();
+            webElement.sendKeys(keys);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Error sending keys : " + e.getMessage());
+            throw e;
+        }
+    }
+
     public static void openSideBarToSelect(WebDriver driver, String option) {
         try {
 
@@ -162,4 +176,41 @@ public class Wrappers {
         }
     }
     
+    public static void signIn(WebDriver driver, String email, String password) {
+        try {
+            System.out.println("Log : Signing in");
+            jsExecutor = (JavascriptExecutor) driver;
+            String signInButtonXpath = "//*[@id='buttons']//a[@aria-label='Sign in']//*[@class='yt-spec-touch-feedback-shape__fill']"; // sign in button
+            wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(signInButtonXpath)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(signInButtonXpath)));
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(signInButtonXpath)));
+            WebElement signInButtonWebElement = driver.findElement(By.xpath(signInButtonXpath));   
+            jsExecutor.executeScript("arguments[0].scrollIntoView();", signInButtonWebElement); // scroll to center of viewport
+            signInButtonWebElement.click();
+
+            String emailInputXpath = "//input[@type='email']"; // email input
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(emailInputXpath)));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(emailInputXpath)));
+            WebElement emailInputElement = Wrappers.findWebElement(driver, By.xpath(emailInputXpath), 3, 1);
+            Wrappers.sendKeys(driver, emailInputElement, email);
+
+            String nextButtonXpath = "//span[contains(text(),'Next')]"; // next button
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(nextButtonXpath)));
+            WebElement nextButtonElement = Wrappers.findWebElement(driver, By.xpath(nextButtonXpath), 3, 1);
+            Wrappers.clickWebElement(driver, nextButtonElement);
+
+            String passwordInputXpath = "//input[@type='password']"; // password input
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(passwordInputXpath)));
+            WebElement passwordInputElement = driver.findElement(By.xpath(passwordInputXpath));
+            Wrappers.sendKeys(driver, passwordInputElement, password);
+
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(nextButtonXpath)));
+            WebElement nextButtonElementForPassword = Wrappers.findWebElement(driver, By.xpath(nextButtonXpath), 3, 1);
+            Wrappers.clickWebElement(driver, nextButtonElementForPassword);
+
+        } catch (Exception e) {
+            System.out.println("Error in signing in : " + e.getMessage());
+        }
+    }
 }
