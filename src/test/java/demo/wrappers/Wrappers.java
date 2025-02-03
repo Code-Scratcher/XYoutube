@@ -75,8 +75,23 @@ public class Wrappers {
             wait.until(ExpectedConditions.elementToBeClickable(locator));
             WebElement clickableElement = Wrappers.findWebElement(driver, locator, 3, 1);
             JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-            jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center'});", clickableElement); // scroll to center of viewport
+            jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'});", clickableElement); // scroll to center of viewport
             clickableElement.click();
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Error in clicking element : "+e.getMessage());
+            throw e;
+        }
+    }
+
+    public static void clickWebElement(WebDriver driver, WebElement webElement) throws Exception {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.visibilityOf(webElement));
+            wait.until(ExpectedConditions.elementToBeClickable(webElement));
+            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+            jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'});", webElement); // scroll to center of viewport
+            webElement.click();
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Error in clicking element : "+e.getMessage());

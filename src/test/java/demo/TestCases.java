@@ -161,11 +161,9 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             String showMoreButtonXpath = ".//*[contains(@class,'button-container') and not(@hidden)]//button"; // child of musicSectionElement
             WebElement showMoreButtonElement = musicSectionElement.findElement(By.xpath(showMoreButtonXpath));
 
-            jsExecutor.executeScript("arguments[0].scrollIntoView();", showMoreButtonElement);
+            jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'});", showMoreButtonElement); // click intercept error wihout {block: 'center'}
             showMoreButtonElement.click();
             System.out.println("Log : Clicked on Show More button");
-
-            Thread.sleep(20000); // debug purpose
 
             sa.assertAll();
             
