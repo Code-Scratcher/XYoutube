@@ -180,7 +180,7 @@ public class Wrappers {
         try {
             System.out.println("Log : Signing in");
             jsExecutor = (JavascriptExecutor) driver;
-            String signInButtonXpath = "//*[@id='buttons']//a[@aria-label='Sign in']//*[@class='yt-spec-touch-feedback-shape__fill']"; // sign in button
+            String signInButtonXpath = "//*[@id='buttons']//a[@aria-label='Sign in']"; // sign in button
             wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(signInButtonXpath)));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(signInButtonXpath)));
