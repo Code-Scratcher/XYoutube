@@ -39,7 +39,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
      * TODO: Write your tests here with testng @Test annotation. 
      * Follow `testCase01` `testCase02`... format or what is provided in instructions
      */   
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase01() {    
         System.out.println("Test Case 01 : Start");
         try {
@@ -66,7 +66,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 01 : End");
     }  
     
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase02() {
         System.out.println("Test Case 02 : Start");
         try {
@@ -135,7 +135,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 02 : End");
     }
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase03() {
         System.out.println("Test Case 03 : Start");
 
@@ -201,7 +201,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             System.out.println("Log : Opened youtube.com");
 
             // signin
-            Wrappers.signIn(driver, "testemail@gmail.com", "t123es&2tPasWor@d");
+            // Wrappers.signIn(driver, "testemail@gmail.com", "t123es&2tPasWor@d");
 
             //open side bar and click on News
             String sideBarOption = "News"; // change this to the section you want to test
@@ -255,6 +255,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         logs.enable(LogType.DRIVER, Level.ALL);
         options.setCapability("goog:loggingPrefs", logs);
         options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--user-data-dir=c:/Users/debop/AppData/Local/Google/Chrome/User Data/"); // for login using existing user data(mandatory for TC04)
 
         System.setProperty(ChromeDriverService.CHROME_DRIVER_LOG_PROPERTY, "build/chromedriver.log"); 
 
