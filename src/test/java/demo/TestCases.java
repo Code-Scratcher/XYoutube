@@ -39,7 +39,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
      * TODO: Write your tests here with testng @Test annotation. 
      * Follow `testCase01` `testCase02`... format or what is provided in instructions
      */   
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testCase01() {    
         System.out.println("Test Case 01 : Start");
         try {
@@ -66,7 +66,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 01 : End");
     }  
     
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testCase02() {
         System.out.println("Test Case 02 : Start");
         try {
@@ -78,8 +78,8 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             System.out.println("Log : Opened youtube.com");
 
             //open side bar and click on Films
-            Wrappers.openSideBarToSelect(driver, "Films");
-            System.out.println("Log : Opened side bar and clicked on Films");
+            Wrappers.openSideBarToSelect(driver, "Movies");
+            System.out.println("Log : Opened side bar and clicked on Films(Movies when logged in)");
 
             
             String filmGenre = "Top selling"; // change this to the genre you want to test(when not signed in "Top selling" is the only genre available)
@@ -135,7 +135,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 02 : End");
     }
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testCase03() {
         System.out.println("Test Case 03 : Start");
 
@@ -220,15 +220,24 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             List<WebElement> newsPostsElements = newsSectionElement.findElements(By.xpath(newsPostXpath));
             System.out.println("Log : Number of news posts in "+newsSection+" section: "+newsPostsElements.size());
 
-            // String contentratinglabelXpath = ".//*[contains(@class,'badge-style-type-simple')]//p"; // child of movieCardElements
-            // WebElement lastcontentratinglabelElement = movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(contentratinglabelXpath)); // last movie card in the genre
-            // sa.assertEquals(lastcontentratinglabelElement.getText(), "U/A", "Last movie in "+filmGenre+" genre is not U/A rated");
+            System.out.println("Log : Titles and Body of first 3 news posts in "+newsSection+" section:\n");
+            String newsPostBodyXpath = ".//*[@id='home-content-text']"; // child of newsPostsElements
+            String newsPostTitlXpath = ".//*[@id='author-text']/span"; // child of newsPostsElements
+            String newsPostLikeCountXpath = ".//*[@id='vote-count-middle' and contains(text(),'')]"; // child of newsPostsElements
+            int likeCount = 0;
+            for (int i=0; i<3; i++) {
+                WebElement newsPosTitlWebElement = newsPostsElements.get(i).findElement(By.xpath(newsPostTitlXpath));
+                System.out.println("\tLog : Title of news post "+(i+1)+": "+newsPosTitlWebElement.getText());
+                WebElement newsPostBodyWebElement = newsPostsElements.get(i).findElement(By.xpath(newsPostBodyXpath));
+                System.out.println("\tLog : Body of news post "+(i+1)+": "+newsPostBodyWebElement.getText());
+                System.out.println("");
 
-            // String movieMetaData = ".//*[contains(@class,'grid-movie-renderer-metadata')]"; // child of movieCardElements (movie genre, year)
-            // if (Wrappers.findWebElement(driver, By.xpath(movieMetaData), 3, 1)!=null) {
-            //     String movieMetaDataText = movieCardElements.get(movieCardElements.size()-1).findElement(By.xpath(movieMetaData)).getText().trim();
-            // }
+                int likeCountInPost = Integer.parseInt(newsPostsElements.get(i).findElement(By.xpath(newsPostLikeCountXpath)).getText().replaceAll("[^0-9]", ""));
+                likeCount += likeCountInPost;
+            }
 
+            System.out.println("Log : Total like count of first 3 news posts in "+newsSection+" section: "+likeCount);
+            Thread.sleep(60000);
             sa.assertAll();
         } catch (Exception e) {
             // TODO: handle exception
@@ -255,7 +264,8 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         logs.enable(LogType.DRIVER, Level.ALL);
         options.setCapability("goog:loggingPrefs", logs);
         options.addArguments("--remote-allow-origins=*");
-        options.addArguments("--user-data-dir=c:/Users/debop/AppData/Local/Google/Chrome/User Data/"); // for login using existing user data(mandatory for TC04)
+        String userHome = "debop"; // change to your home directory
+        options.addArguments("--user-data-dir=c:/Users/"+userHome+"/AppData/Local/Google/Chrome/User Data/"); // for login using existing user data(mandatory for TC04)
 
         System.setProperty(ChromeDriverService.CHROME_DRIVER_LOG_PROPERTY, "build/chromedriver.log"); 
 
