@@ -189,7 +189,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 03 : End");
     }
 
-    @Test(enabled = true)
+    @Test(enabled = false)
     public void testCase04() {
         System.out.println("Test Case 04 : Start");
 
@@ -247,16 +247,43 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 04 : End");
     }
 
-    @Test(enabled = true)
-    public void testCase05() {    
+    @Test(enabled = true, dataProvider = "excelData")
+    public void testCase05(String searchTerm) {    
         System.out.println("Test Case 05 : Start");
         try {
             SoftAssert sa = new SoftAssert();
+            JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 
             driver.get("https://www.youtube.com/");
             Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
             System.out.println("Log : Opened youtube.com");
             
+            String searchBoxXpath = "//yt-searchbox//input[@name='search_query']"; // search box
+            WebElement searchBoxElement = Wrappers.findWebElement(driver, By.xpath(searchBoxXpath), 3, 1);
+            Wrappers.sendKeys(driver, searchBoxElement, searchTerm);
+            searchBoxElement.sendKeys(Keys.ENTER);
+
+            String videoInfoXpath = "//div[@class='text-wrapper style-scope ytd-video-renderer']";
+            List<WebElement> videoInfoElements = Wrappers.findWebElementList(driver, By.xpath(videoInfoXpath), 3, 1);
+            System.out.println("Found "+videoInfoElements.size()+" videos for search term: "+searchTerm); // debugging purpose
+
+            String videoViewCountXpath = ".//span[@class='inline-metadata-item style-scope ytd-video-meta-block'][1]"; // child of videoInfoElements
+            long cumulativeViewCount = 0;
+            int i = 0; // index of videoInfoElements
+            while (cumulativeViewCount<100000000) {
+                //jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+                WebElement videoViewCountElement = videoInfoElements.get(i).findElement(By.xpath(videoViewCountXpath));
+                jsExecutor.executeScript("arguments[0].scrollIntoView({Block : 'center',  behavior: 'smooth'});", videoViewCountElement);
+                String viewCountText = videoViewCountElement.getText().replace(" views", "");
+                String videoTitleXpath = ".//div[@id='meta']//yt-formatted-string[@class='style-scope ytd-video-renderer']"; // child of videoInfoElements // debuggging purpose
+                System.out.println("Video title "+(i+1)+": "+videoInfoElements.get(i).findElement(By.xpath(videoTitleXpath)).getText()); // debugging purpose
+                System.out.println("View count of video "+(i+1)+": "+viewCountText);
+                cumulativeViewCount += Wrappers.countViews(viewCountText);
+                System.out.println("Cumulative view count: "+cumulativeViewCount);
+                i++;
+                Thread.sleep(3000);
+            }
+
             sa.assertAll();
             
         } catch (Exception e) {
@@ -285,10 +312,9 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         logs.enable(LogType.DRIVER, Level.ALL);
         options.setCapability("goog:loggingPrefs", logs);
         options.addArguments("--remote-allow-origins=*");
-        String userHome = "debop"; // change to your home directory
         String homeDir = System.getProperty("user.home");
         options.addArguments("--user-data-dir="+homeDir+"\\AppData\\Local\\Google\\Chrome\\User Data\\"); // for login using existing user data(mandatory for TC04)
-        System.out.println("Log : Passing user data directory: "+homeDir+"\\AppData\\Local\\Google\\Chrome\\User Data\\");
+        System.out.println("Log : Passing user data directory as argument to ChromeOptions options: "+homeDir+"\\AppData\\Local\\Google\\Chrome\\User Data\\");
 
         System.setProperty(ChromeDriverService.CHROME_DRIVER_LOG_PROPERTY, "build/chromedriver.log"); 
 

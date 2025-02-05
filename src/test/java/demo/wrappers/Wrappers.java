@@ -213,4 +213,23 @@ public class Wrappers {
             System.out.println("Error in signing in : " + e.getMessage());
         }
     }
+
+    public static Long countViews(String viewText) {
+        try {
+            String number = viewText.replaceAll("([A-Za-z])", "");
+            String alphabet = viewText.replaceAll("(\\d+\\.\\d+|\\d++)", "");
+            if(alphabet.contains("K")) {
+                return (long) (Integer.parseInt(number) * 1000);
+            } else if(alphabet.contains("M")) {
+                return (long) (Integer.parseInt(number) * 1000000);
+            } else if(alphabet.contains("B")) {
+                return (long) (Integer.parseInt(number) * 1000000000);
+            } else {
+                return (long) Integer.parseInt(number);
+            }
+        } catch (Exception e) {
+            System.out.println("Wrapper Error in counting views : " + e.getMessage());
+            return 0L;
+        }
+    }
 }
