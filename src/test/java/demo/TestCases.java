@@ -183,6 +183,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Exception in TestCase03: " + e.getMessage());
+            Assert.fail("Exception in TestCase03: " + e.getMessage());
         }
 
         System.out.println("Test Case 03 : End");
@@ -199,9 +200,6 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             System.out.println("Log : Opened youtube.com/");
             Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
             System.out.println("Log : Opened youtube.com");
-
-            // signin
-            // Wrappers.signIn(driver, "testemail@gmail.com", "t123es&2tPasWor@d");
 
             //open side bar and click on News
             String sideBarOption = "News"; // change this to the section you want to test
@@ -220,6 +218,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             List<WebElement> newsPostsElements = newsSectionElement.findElements(By.xpath(newsPostXpath));
             System.out.println("Log : Number of news posts in "+newsSection+" section: "+newsPostsElements.size());
 
+            // Titles and Body of first 3 news posts in newsSection
             System.out.println("Log : Titles and Body of first 3 news posts in "+newsSection+" section:\n");
             String newsPostBodyXpath = ".//*[@id='home-content-text']"; // child of newsPostsElements
             String newsPostTitlXpath = ".//*[@id='author-text']/span"; // child of newsPostsElements
@@ -237,14 +236,36 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             }
 
             System.out.println("Log : Total like count of first 3 news posts in "+newsSection+" section: "+likeCount);
-            Thread.sleep(60000);
+            Thread.sleep(100);
             sa.assertAll();
         } catch (Exception e) {
             // TODO: handle exception
+            System.out.println("Exception in TestCase04: " + e.getMessage());
             Assert.fail("Exception in TestCase04: " + e.getMessage());
         }
 
         System.out.println("Test Case 04 : End");
+    }
+
+    @Test(enabled = true)
+    public void testCase05() {    
+        System.out.println("Test Case 05 : Start");
+        try {
+            SoftAssert sa = new SoftAssert();
+
+            driver.get("https://www.youtube.com/");
+            Assert.assertTrue(driver.getCurrentUrl().contains("youtube.com"), "Current page is not youtube.com");
+            System.out.println("Log : Opened youtube.com");
+            
+            sa.assertAll();
+            
+        } catch (Exception e) {
+            // Log the exception or throw a custom exception
+            System.out.println("Exception in TestCase05: " + e.getMessage());
+            Assert.fail("Exception in TestCase05: " + e.getMessage());
+        }
+
+        System.out.println("Test Case 05 : End");
     }
     /*
      * Do not change the provided methods unless necessary, they will help in automation and assessment
@@ -265,7 +286,9 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         options.setCapability("goog:loggingPrefs", logs);
         options.addArguments("--remote-allow-origins=*");
         String userHome = "debop"; // change to your home directory
-        options.addArguments("--user-data-dir=c:/Users/"+userHome+"/AppData/Local/Google/Chrome/User Data/"); // for login using existing user data(mandatory for TC04)
+        String homeDir = System.getProperty("user.home");
+        options.addArguments("--user-data-dir="+homeDir+"\\AppData\\Local\\Google\\Chrome\\User Data\\"); // for login using existing user data(mandatory for TC04)
+        System.out.println("Log : Passing user data directory: "+homeDir+"\\AppData\\Local\\Google\\Chrome\\User Data\\");
 
         System.setProperty(ChromeDriverService.CHROME_DRIVER_LOG_PROPERTY, "build/chromedriver.log"); 
 
