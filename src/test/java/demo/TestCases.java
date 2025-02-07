@@ -39,7 +39,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
      * TODO: Write your tests here with testng @Test annotation. 
      * Follow `testCase01` `testCase02`... format or what is provided in instructions
      */   
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase01() {    
         System.out.println("Test Case 01 : Start");
         try {
@@ -66,7 +66,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 01 : End");
     }  
     
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase02() {
         System.out.println("Test Case 02 : Start");
         try {
@@ -135,7 +135,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 02 : End");
     }
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase03() {
         System.out.println("Test Case 03 : Start");
 
@@ -189,7 +189,7 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
         System.out.println("Test Case 03 : End");
     }
 
-    @Test(enabled = false)
+    @Test(enabled = true)
     public void testCase04() {
         System.out.println("Test Case 04 : Start");
 
@@ -260,37 +260,66 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             
             String searchBoxXpath = "//yt-searchbox//input[@name='search_query']"; // search box
             WebElement searchBoxElement = Wrappers.findWebElement(driver, By.xpath(searchBoxXpath), 3, 1);
-            Wrappers.sendKeys(driver, searchBoxElement, searchTerm);
+            Wrappers.sendKeys(driver, searchBoxElement, searchTerm); // search term
             searchBoxElement.sendKeys(Keys.ENTER);
 
+            // for initial element
             String videoInfoXpath = "//div[@class='text-wrapper style-scope ytd-video-renderer']";
-            List<WebElement> videoInfoElements = Wrappers.findWebElementList(driver, By.xpath(videoInfoXpath), 3, 1);
-            System.out.println("Found "+videoInfoElements.size()+" videos for search term: "+searchTerm); // debugging purpose
+            List<WebElement> currentvideoInfoElements = Wrappers.findWebElementList(driver, By.xpath(videoInfoXpath), 3, 1);
+            System.out.println("Found "+currentvideoInfoElements.size()+" videos for search term: "+searchTerm); // debugging purpose
+            List<WebElement> allVideoInfoElements = new ArrayList<WebElement>();
+            allVideoInfoElements.addAll(currentvideoInfoElements);
 
             String videoViewCountXpath = ".//span[@class='inline-metadata-item style-scope ytd-video-meta-block'][1]"; // child of videoInfoElements
+            String videoTitleXpath = ".//div[@id='meta']//yt-formatted-string[@class='style-scope ytd-video-renderer']"; // child of videoInfoElements
+
+            // count of views of all videos
             long cumulativeViewCount = 0;
-            int i = 0; // index of videoInfoElements
+
+            // Track the last processed index
+            int lastProcessedIndex = 0;
+
             while (cumulativeViewCount<100000000) {
-                //jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-                WebElement videoViewCountElement = videoInfoElements.get(i).findElement(By.xpath(videoViewCountXpath));
-                String viewCountText = ""; // view count of video without 'watching' or 'views' text
+                if (lastProcessedIndex<allVideoInfoElements.size()) {
+                    WebElement nextVideoInfoElement = allVideoInfoElements.get(lastProcessedIndex);
+                    jsExecutor.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'});", nextVideoInfoElement);
+                    
+                    /* fetch current view count and title of the next nextVideoInfoElement, add view to cummulative videoCount */
+                    WebElement videoTitleElement = nextVideoInfoElement.findElement(By.xpath(videoTitleXpath));
+                    System.out.println("\tLog : Title of video "+(lastProcessedIndex+1)+": "+videoTitleElement.getText());
 
-                jsExecutor.executeScript("arguments[0].scrollIntoView({Block : 'center',  behavior: 'smooth'});", videoViewCountElement);
+                    WebElement videoViewCountElement = nextVideoInfoElement.findElement(By.xpath(videoViewCountXpath));
+                    System.out.println("\t\tLog : View count of video "+(lastProcessedIndex+1)+": "+videoViewCountElement.getText());
 
-                if (videoViewCountElement.getText().contains("watching")) {
-                    viewCountText = videoViewCountElement.getText().replace(" watching", "");
+                    String viewCountText = ""; // view count of video without 'watching' or 'views' text
+                    if (videoViewCountElement.getText().contains("watching")) {
+                        viewCountText = videoViewCountElement.getText().replace(" watching", "");
+                    } else if (videoViewCountElement.getText().contains("views")) {
+                        viewCountText = videoViewCountElement.getText().replace(" views", "");
+                    } else if (videoViewCountElement.getText().contains("No views")) {
+                        viewCountText = videoViewCountElement.getText().replace("No views", "0");
+                    }
+                    cumulativeViewCount += Wrappers.countViews(viewCountText);
+
+                    System.out.println("\t\tLog : Cumulative view count: "+cumulativeViewCount);
+                    System.out.println("");
+
+                    Thread.sleep(2000);
+                    lastProcessedIndex++;
                 } else {
-                    viewCountText = videoViewCountElement.getText().replace(" views", "");
+                    // if no more videos are available, break the loop
+                    break;
                 }
-                
-                String videoTitleXpath = ".//div[@id='meta']//yt-formatted-string[@class='style-scope ytd-video-renderer']"; // child of videoInfoElements // debuggging purpose
-                System.out.println("\tVideo title "+(i+1)+": "+videoInfoElements.get(i).findElement(By.xpath(videoTitleXpath)).getText()); // debugging purpose
-                System.out.println("\t\tLog : View count of video "+(i+1)+":"+viewCountText);
-                cumulativeViewCount += Wrappers.countViews(viewCountText);
-                System.out.println("\t\tLog : Cumulative view count: "+cumulativeViewCount);
-                System.out.println("");
-                i++;
-                Thread.sleep(3000);
+
+                // will fetch new video elements and all previous video elements that were available in the page(allvideoInfoElements)
+                List<WebElement> newVideoInfoElements = Wrappers.findWebElementList(driver, By.xpath(videoInfoXpath), 3, 1);
+
+                if(newVideoInfoElements.size() > allVideoInfoElements.size()) {
+                    // refresh the allVideoInfoElements list
+                    allVideoInfoElements.clear();
+                    allVideoInfoElements.addAll(newVideoInfoElements);
+                }
+
             }
 
             sa.assertAll();
