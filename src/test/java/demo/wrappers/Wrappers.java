@@ -219,16 +219,17 @@ public class Wrappers {
             String number = viewText.replaceAll("([A-Za-z])", "");
             String alphabet = viewText.replaceAll("(\\d+\\.\\d+|\\d++)", "");
             if(alphabet.contains("K")) {
-                return (long) (Integer.parseInt(number) * 1000);
+                return (long) (Float.parseFloat(number) * 1000);
             } else if(alphabet.contains("M")) {
-                return (long) (Integer.parseInt(number) * 1000000);
+                return (long) (Float.parseFloat(number) * 1000000);
             } else if(alphabet.contains("B")) {
-                return (long) (Integer.parseInt(number) * 1000000000);
+                return (long) (Float.parseFloat(number) * 1000000000);
             } else {
                 return (long) Integer.parseInt(number);
             }
         } catch (Exception e) {
-            System.out.println("Wrapper Error in counting views : " + e.getMessage());
+            System.out.println("\tWrapper.countViews() error type:"+e); // debugging purpose
+            System.out.println("\tWrapper.countViews() Error in counting views : " + e.getMessage());
             return 0L;
         }
     }

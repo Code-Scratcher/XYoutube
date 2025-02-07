@@ -273,13 +273,22 @@ public class TestCases extends ExcelDataProvider{ // Lets us read the data
             while (cumulativeViewCount<100000000) {
                 //jsExecutor.executeScript("window.scrollTo(0, document.body.scrollHeight);");
                 WebElement videoViewCountElement = videoInfoElements.get(i).findElement(By.xpath(videoViewCountXpath));
+                String viewCountText = ""; // view count of video without 'watching' or 'views' text
+
                 jsExecutor.executeScript("arguments[0].scrollIntoView({Block : 'center',  behavior: 'smooth'});", videoViewCountElement);
-                String viewCountText = videoViewCountElement.getText().replace(" views", "");
+
+                if (videoViewCountElement.getText().contains("watching")) {
+                    viewCountText = videoViewCountElement.getText().replace(" watching", "");
+                } else {
+                    viewCountText = videoViewCountElement.getText().replace(" views", "");
+                }
+                
                 String videoTitleXpath = ".//div[@id='meta']//yt-formatted-string[@class='style-scope ytd-video-renderer']"; // child of videoInfoElements // debuggging purpose
-                System.out.println("Video title "+(i+1)+": "+videoInfoElements.get(i).findElement(By.xpath(videoTitleXpath)).getText()); // debugging purpose
-                System.out.println("View count of video "+(i+1)+": "+viewCountText);
+                System.out.println("\tVideo title "+(i+1)+": "+videoInfoElements.get(i).findElement(By.xpath(videoTitleXpath)).getText()); // debugging purpose
+                System.out.println("\t\tLog : View count of video "+(i+1)+":"+viewCountText);
                 cumulativeViewCount += Wrappers.countViews(viewCountText);
-                System.out.println("Cumulative view count: "+cumulativeViewCount);
+                System.out.println("\t\tLog : Cumulative view count: "+cumulativeViewCount);
+                System.out.println("");
                 i++;
                 Thread.sleep(3000);
             }
